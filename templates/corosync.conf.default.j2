@@ -37,6 +37,10 @@ totem {
 {% if corosync_transport is defined %}
   transport: {{ corosync_transport }}
 {% endif %}
+{% if corosync_stonith is defined %}
+  stonith-enabled: {{ corosync_stonith }}
+{% endif %}
+
 
 {# If there're defined interfaces, prepare defaults dict and rings counter #}
 {% if corosync_interfaces is defined %}
@@ -62,7 +66,7 @@ totem {
   interface {
     ringnumber: {{ ringnumber }}
     bindnetaddr: {{ interface.bindnetaddr }}
-{% if interface.broadcast is defined and interface.broadcast == 'yes' %}
+{% if interface.broadcast is defined and interface.broadcast %}
     broadcast: yes
 {% elif interface.mcastaddr is defined %}
     mcastaddr: {{ interface.mcastaddr }}
@@ -88,7 +92,7 @@ totem {
   interface {
     ringnumber: 0
     bindnetaddr: {{ ansible_default_ipv4.network }}
-{% if corosync_default_broadcast is defined and corosync_default_broadcast == 'yes' %}
+{% if corosync_default_broadcast is defined and corosync_default_broadcast %}
     broadcast: yes
 {% elif corosync_mcastaddr is defined %}
     mcastaddr: {{ corosync_default_mcastaddr }}
@@ -161,6 +165,16 @@ logging {
   }
 {% endfor %}
 {% endif %}
+}
+
+service {
+        name: pacemaker
+        ver: 0
+}
+
+aisexec {
+        user:root
+        group: root
 }
 
 amf {

@@ -14,7 +14,7 @@
     - config
 
 - name: Ensure corosync services
-  corosync_service: name={{item.service}} ver={{item.ver}} user={{item.user}} group={{item.group}}
+  corosync_service: name={{ item.service }} ver={{ item.ver }} user={{ item.user }} group={{ item.group }}
   with_items: services
   when: services is defined
   notify:
@@ -25,3 +25,8 @@
     - corosync
     - config
 
+- name: Create authkey file
+  copy: >
+    content="{{ ansible_date_time.epoch | to_uuid | hash('sha512') }}"
+    dest=/etc/corosync/authkey backup=no owner=root group=root mode=0644
+  when: creat_authkey is defined

@@ -3,6 +3,7 @@
 - name: stop corosync services
   service: name={{ item.name }} state=stopped
   with_items: services
+  when: services is defined
   tags:
    - corosync
    - service
@@ -16,6 +17,7 @@
 - name: start corosync services
   service: name={{ item.name }} state=started
   with_items: services
+  when: services is defined
   tags:
    - corosync
    - service

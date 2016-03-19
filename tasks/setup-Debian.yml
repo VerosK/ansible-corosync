@@ -5,4 +5,9 @@
     - corosync
     - setup
   with_items: corosync_packages
+  register: corosync_installed
+
+- name: Deploy authkey
+  set_fact: creat_authkey=True
+  when: corosync_installed|changed
 
