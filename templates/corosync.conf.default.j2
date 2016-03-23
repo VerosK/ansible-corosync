@@ -74,18 +74,9 @@ totem {
 {% if interface.mcastport is defined %}
     mcastport: {{ interface.mcastport }}
 {% endif %}
-{% if interface.ttl is defined %}
+{% if interface.ttl is defined and corosync_transport != 'udpu' %}
     ttl: {{ interface.ttl }}
 {%- endif %}
-{% if corosync_transport is defined and corosync_transport == 'udpu' %}
-  {%- for memberaddr in interface.members %}
-
-    member {
-      memberaddr: {{ memberaddr }}
-    }
-  {%- endfor %}
-{% endif %}
-
   }
 {% set ringnumber = ringnumber + 1 %}
 {% else %}
@@ -100,17 +91,9 @@ totem {
 {% if corosync_mcastport is defined %}
     mcastport: {{ corosync_default_mcastport }}
 {% endif %}
-{% if corosync_default_ttl is defined %}
+{% if corosync_default_ttl is defined and corosync_transport != 'udpu' %}
     ttl: {{ corosync_default_ttl }}
 {%- endif %}
-{% if corosync_transport is defined and corosync_transport == 'udpu' %}
-  {%- for host in groups[corosync_default_members] %}
-
-    member {
-      memberaddr: {{ hostvars[host]['ansible_default_ipv4'].address }}
-    }
-  {%- endfor %}
-{% endif %}
 
   }
 {% endfor %}
@@ -165,6 +148,46 @@ logging {
   }
 {% endfor %}
 {% endif %}
+}
+
+{% if corosync_quorum is defined %}
+quorum {
+  provider: corosync_votequorum
+  {% if corosync_quorum_two_node is defined %}
+  two_node: on
+  {% endif %}
+
+}
+{% endif %}
+
+nodelist {
+
+{%- if corosync_interfaces is defined %}
+  {%- for interface in corosync_interfaces %}
+    {% if corosync_transport is defined and corosync_transport == 'udpu' %}
+    {%- for memberaddr in interface.members %}
+
+   node {
+       ring0_addr: {{ memberaddr }}
+       nodeid: {{ loop.index }}
+   }
+
+    {%- endfor %}
+    {% endif %}
+  {% endfor %}
+{%- else %}
+  {% if corosync_transport is defined and corosync_transport == 'udpu' %}
+    {%- for host in groups[corosync_default_members] %}
+
+    node {
+      ring0_addr: {{ hostvars[host]['ansible_default_ipv4'].address }}
+      nodeid: {{ loop.index }}
+    }
+
+    {%- endfor %}
+  {% endif %}
+{%- endif %}
+
 }
 
 service {
