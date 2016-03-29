@@ -44,7 +44,6 @@ totem {
 
 {# If there're defined interfaces, prepare defaults dict and rings counter #}
 {% if corosync_interfaces is defined %}
-  {%- set ringnumber = 0 %}
   {%- set defaults = {} %}
   {%- if corosync_default_broadcast is defined %}
     {%- do defaults.update({'broadcast': corosync_default_broadcast}) %}
@@ -64,7 +63,7 @@ totem {
 {%- for interface in corosync_interfaces %}
 {% do interface.update(defaults) %}
   interface {
-    ringnumber: {{ ringnumber }}
+    ringnumber: {{ loop.index0 }}
     bindnetaddr: {{ interface.bindnetaddr }}
 {% if interface.broadcast is defined and interface.broadcast %}
     broadcast: yes
@@ -78,10 +77,9 @@ totem {
     ttl: {{ interface.ttl }}
 {%- endif %}
   }
-{% set ringnumber = ringnumber + 1 %}
 {% else %}
   interface {
-    ringnumber: 0
+    ringnumber: {{ loop.index0 }}
     bindnetaddr: {{ ansible_default_ipv4.network }}
 {% if corosync_default_broadcast is defined and corosync_default_broadcast %}
     broadcast: yes
@@ -162,30 +160,21 @@ quorum {
 
 nodelist {
 
-{%- if corosync_interfaces is defined %}
-  {%- for interface in corosync_interfaces %}
+{%- if corosync_nodes is defined %}
+  {%- for node in corosync_nodes %}
     {% if corosync_transport is defined and corosync_transport == 'udpu' %}
-    {%- for memberaddr in interface.members %}
 
    node {
-       ring0_addr: {{ memberaddr }}
-       nodeid: {{ loop.index }}
+
+      {% for memberaddr in node.members %}
+       ring{{ loop.index0 }}_addr: {{ memberaddr }}
+      {% endfor %}
+
+       nodeid: {{ node.id}}
    }
 
-    {%- endfor %}
     {% endif %}
   {% endfor %}
-{%- else %}
-  {% if corosync_transport is defined and corosync_transport == 'udpu' %}
-    {%- for host in groups[corosync_default_members] %}
-
-    node {
-      ring0_addr: {{ hostvars[host]['ansible_default_ipv4'].address }}
-      nodeid: {{ loop.index }}
-    }
-
-    {%- endfor %}
-  {% endif %}
 {%- endif %}
 
 }

@@ -27,6 +27,6 @@
 
 - name: Create authkey file
   copy: >
-    content="{{ ansible_date_time.epoch | to_uuid | hash('sha512') }}"
+    content="{{ corosync_authkey }}"
     dest=/etc/corosync/authkey backup=no owner=root group=root mode=0644
-  when: creat_authkey is defined
+  when: create_authkey is defined and corosync_authkey is defined

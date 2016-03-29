@@ -8,6 +8,6 @@
   register: corosync_installed
 
 - name: Deploy authkey
-  set_fact: creat_authkey=True
+  set_fact: create_authkey=True
   when: corosync_installed|changed
 

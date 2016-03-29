@@ -1,6 +1,6 @@
 ---
 - name: Ensure apt packages
-  apt: pkg={{ item }} state={{ corosync_pkg_state }}
+  apt: pkg={{ item }} state={{ corosync_pkg_state }} force=yes
   tags:
     - corosync
     - setup
@@ -8,6 +8,6 @@
   register: corosync_installed
 
 - name: Deploy authkey
-  set_fact: creat_authkey=True
+  set_fact: create_authkey=True
   when: corosync_installed|changed
 
