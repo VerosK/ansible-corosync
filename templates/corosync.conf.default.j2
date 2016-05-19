@@ -152,7 +152,7 @@ logging {
 quorum {
   provider: corosync_votequorum
   {% if corosync_quorum_two_node is defined %}
-  two_node: on
+  two_node: 1
   {% endif %}
 
 }
