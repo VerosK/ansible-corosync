@@ -1,6 +1,9 @@
 ---
 - name: Ensure service is started/stopped
-  service: name=corosync state={{ corosync_service_state }} enabled={{ corosync_service_enabled }}
+  service:
+    name: corosync
+    state: '{{ corosync_service_state }}'
+    enabled: '{{ corosync_service_enabled }}'
   tags:
    - corosync
    - service

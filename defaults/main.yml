@@ -41,7 +41,7 @@ corosync_pkg_state: present
 #corosync_threads: 0
 
 # Options: udp, udpu, iba
-#corosync_transport: udp
+corosync_transport: udpu
 
 ## interface {
 

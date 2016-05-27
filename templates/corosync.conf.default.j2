@@ -40,7 +40,9 @@ totem {
 {% if corosync_stonith is defined %}
   stonith-enabled: {{ corosync_stonith }}
 {% endif %}
-
+{% if corosync_cluster_name is defined %}
+  cluster_name: {{ corosync_cluster_name }}
+{% endif %}
 
 {# If there're defined interfaces, prepare defaults dict and rings counter #}
 {% if corosync_interfaces is defined %}
@@ -76,6 +78,11 @@ totem {
 {% if interface.ttl is defined and corosync_transport != 'udpu' %}
     ttl: {{ interface.ttl }}
 {%- endif %}
+{%  if corosync_transport == 'udpu' %}
+    member {
+        memberaddr: {{  interface.bindnetaddr }}
+    }
+{% endif %}
   }
 {% else %}
   interface {
@@ -162,27 +169,31 @@ nodelist {
 
 {%- if corosync_nodes is defined %}
   {%- for node in corosync_nodes %}
-    {% if corosync_transport is defined and corosync_transport == 'udpu' %}
+    {%- if corosync_transport is defined and corosync_transport == 'udpu' %}
 
    node {
-
       {% for memberaddr in node.members %}
-       ring{{ loop.index0 }}_addr: {{ memberaddr }}
+      ring{{ loop.index0 }}_addr: {{ memberaddr }}
       {% endfor %}
-
-       nodeid: {{ node.id}}
+      nodeid: {{ node.id }}
    }
 
     {% endif %}
-  {% endfor %}
+  {%- endfor %}
 {%- endif %}
-
 }
 
+#service {
+#        name: pacemaker
+#        ver: 0
+#}
+
+{%- for service in corosync_services -%}
 service {
-        name: pacemaker
-        ver: 0
+  name: {{ service.service }}
+  ver:  {{  service.ver }}
 }
+{% endfor %}
 
 aisexec {
         user:root
