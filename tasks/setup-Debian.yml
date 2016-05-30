@@ -6,7 +6,7 @@
   tags:
     - corosync
     - setup
-  with_items: corosync_packages
+  with_items: '{{ corosync_packages }}'
   register: corosync_installed
 
 - name: Deploy authkey

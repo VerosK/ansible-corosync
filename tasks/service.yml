@@ -9,6 +9,11 @@
    - service
 
 - name: Enable corosync service in default
-  sudo: yes
-  lineinfile: backrefs=yes backup=yes line='START=yes' regexp='^START=no' dest=/etc/default/corosync
+  become: yes
+  lineinfile:
+      dest: /etc/default/corosync
+      backrefs: yes
+      backup: yes
+      line: 'START=yes'
+      regexp: '^START=no'
   when: "ansible_os_family == 'Debian'"

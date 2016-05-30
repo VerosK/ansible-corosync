@@ -22,3 +22,5 @@
 
 # Common service tasks
 - include: service.yml
+
+- meta: flush_handlers
