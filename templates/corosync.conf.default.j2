@@ -177,6 +177,9 @@ nodelist {
       ring{{ loop.index0 }}_addr: {{ memberaddr }}
       {% endfor %}
       nodeid: {{ node.id }}
+{% if node.name is defined %}
+       name: {{ node.name }}
+{% endif %}
    }
 
     {% endif %}
