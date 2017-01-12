@@ -159,7 +159,7 @@ logging {
 {% if corosync_quorum is defined %}
 quorum {
   provider: corosync_votequorum
-  {% if corosync_quorum_two_node is defined %}
+  {% if corosync_quorum_two_node|default(False) %}
   two_node: 1
   {% endif %}
 

@@ -131,6 +131,9 @@ corosync_default_mcastport: 5405
 # Options: enter|leave|trace1|trace2|trace3|...
 # corosync_tags: none
 
+# Options: true false
+corosync_quorum_two_node: false
+
 # logger_subsys entries.
 #
 # Note:
