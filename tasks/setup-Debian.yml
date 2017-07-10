@@ -13,3 +13,8 @@
   set_fact: create_authkey=True
   when: corosync_installed|changed
 
+# Workaround for https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=829680
+- name: Ensure directory uidgid.d exists for pcs package
+  file:
+    name: /etc/corosync/uidgid.d/
+    state: directory
